@@ -18,7 +18,33 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    
+    // Dashboard general - redirige según rol
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        $user = auth()->user();
+        
+        switch($user->rol_id) {
+            case 1: // Admin
+                return redirect()->route('admin.dashboard');
+            case 2: // Trabajador
+                return redirect()->route('trabajador.dashboard');
+            default:
+                return Inertia::render('Dashboard');
+        }
     })->name('dashboard');
+
+    // Rutas para Admin
+    Route::middleware(['role:1'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Admin/Dashboard');
+        })->name('dashboard');
+    });
+
+    // Rutas para Trabajador
+    Route::middleware(['role:2'])->prefix('trabajador')->name('trabajador.')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Trabajador/Dashboard');
+        })->name('dashboard');
+    });
+
 });
