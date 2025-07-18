@@ -37,14 +37,14 @@ body.dark-mode{
     --user-bg-color: #FAFAFC;
 }
 
-body {
+/* body {
     display: flex;
     width: 100%;
     height: 100vh;
     background-color: var(--color-bg);
     transition: color 0.5s ease,
     background-color 0.3s ease, left 0.5s ease;
-}
+} */
 
 .sidebar {
     position: fixed;
@@ -124,6 +124,8 @@ body {
 
 /* Search */
 .search{
+    align-items: center;
+    justify-items: center;
     display: flex;
     width: 100%;
     padding: 0.55rem 0;
@@ -143,9 +145,11 @@ body {
     background-color: var(--color-bg);
 }
 .search i {
-    font-size: 1.35rem;
+    align-items: center;
+    justify-items: center;
+    font-size: 1.32rem;
     color: var(--color-text-secondary);
-    padding: 0 0.8rem;
+    padding: 0 0.4rem;
 }
 
 .search:hover i {

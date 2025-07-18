@@ -7,7 +7,7 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="../js/app.js">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     @routes
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue", "resources/js/main.js"])

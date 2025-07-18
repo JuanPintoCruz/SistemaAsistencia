@@ -30,7 +30,6 @@ const submit = () => {
 </script>
 
 <template>
-<<<<<<< HEAD
     <Head title="Log in" />
 
     <AuthenticationCard>
@@ -88,8 +87,6 @@ const submit = () => {
             </div>
         </form>
     </AuthenticationCard>
-</template>
-=======
 
     <Head title="Iniciar Sesión - Sistema de Asistencia" />
 
@@ -225,4 +222,3 @@ const submit = () => {
         </div>
     </div>
 </template>
->>>>>>> 2e123569df43a24ee4269ea25d31ababe12d6ef9
