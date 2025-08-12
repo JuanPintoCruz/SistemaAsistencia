@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,7 +31,7 @@ class User extends Authenticatable
     // Agregar estas relaciones y métodos:
     public function role()
     {
-        return $this->belongsTo(Role::class, 'rol_id');
+        return $this->belongsTo(Roles::class, 'rol_id');
     }
 
     public function isAdmin()

@@ -15,7 +15,7 @@ class Roles extends Model
 
     public function permissions()
     {
-        return $this->hasMany(SmtrPermiso::class, 'rol_id');
+        return $this->hasMany(SmtrPermisos::class, 'rol_id');
     }
 
 }

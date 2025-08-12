@@ -20,18 +20,29 @@ Route::middleware([
 ])->group(function () {
     
     // Dashboard general - redirige según rol
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-        
-        switch($user->rol_id) {
-            case 1: // Admin
-                return redirect()->route('admin.dashboard');
-            case 2: // Trabajador
-                return redirect()->route('trabajador.dashboard');
-            default:
-                return Inertia::render('Dashboard');
-        }
-    })->name('dashboard');
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/dashboard', function () {
+            $user = auth()->user();
+            
+            switch($user->rol_id) {
+                case 1: // Admin
+                    return redirect()->route('admin.dashboard');
+                case 2: // Trabajador
+                    return redirect()->route('trabajador.dashboard');
+                default:
+                    return Inertia::render('Dashboard');
+            }
+        })->name('dashboard');
+
+        // Ruta para cerrar sessión
+        Route::get('/logout', function () {
+            auth()->logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect('/');
+        })->name('logout');
+
+    });
 
     // Rutas para Admin
     Route::middleware(['role:1'])->prefix('admin')->name('admin.')->group(function () {
