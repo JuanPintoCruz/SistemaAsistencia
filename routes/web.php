@@ -33,6 +33,15 @@ Route::middleware([
                     return Inertia::render('Dashboard');
             }
         })->name('dashboard');
+
+        // Ruta para cerrar sessión
+        Route::get('/logout', function () {
+            auth()->logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect('/');
+        })->name('logout');
+
     });
 
     // Rutas para Admin

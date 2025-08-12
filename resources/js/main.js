@@ -1,3 +1,6 @@
+import './bootstrap';
+// import '../css/app.css'
+
 const menusItemsDropDown = document.querySelectorAll('.menu-item-dropdown');
 const sidebar = document.getElementById('sidebar');
 const menuBtn = document.getElementById('menu-btn');
@@ -12,6 +15,7 @@ darkModeBtn.addEventListener('click', () => {
 sidebarBtn.addEventListener('click', () => {
     document.body.classList.toggle('sidebar-hidden');
 })
+
 menuBtn.addEventListener('click', () => {
     sidebar.classList.toggle('minimize');
 
@@ -59,7 +63,15 @@ menusItemsStatic.forEach((menuItem) => {
 })
 
 function checkWiddowsSize() {
-    sidebar.classList.remove('minimize');
+    if (sidebar) {
+        sidebar.classList.remove('minimize');
+    }
 }
 checkWiddowsSize();
+
 window.addEventListener('resize', checkWiddowsSize);
+
+
+
+
+
