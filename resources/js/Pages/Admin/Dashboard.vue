@@ -1,5 +1,43 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import { ref, onMounted } from 'vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
+import axios from 'axios'
+
+// Estado
+const trabajadores = ref([])
+const loading = ref(false)
+const trabajadorSeleccionado = ref(null)
+
+//  Obtener trabajadores
+async function cargarTrabajadores() {
+  loading.value = true
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/trabajadores')
+    trabajadores.value = response.data
+    console.log(' Trabajadores cargados:', response.data)
+  } catch (error) {
+    console.error(' Error:', error)
+    alert('Error al cargar trabajadores')
+  } finally {
+    loading.value = false
+  }
+}
+
+const sexo = ref([
+  { id: '1', label: 'Masculino' },
+  { id: '2', label: 'Femenino' },
+])
+
+function obtenerSexo(id) {
+  const encontrado = sexo.value.find(s => s.id == id);
+  return encontrado ? encontrado.label : 'No definido';
+}
+
+
+//  Cargar al inicio
+onMounted(() => {
+  cargarTrabajadores()
+})
 </script>
 
 <template>
@@ -12,114 +50,79 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
     <div class="py-8 px-4">
       <div class="w-full mx-auto bg-white shadow-md rounded-lg p-6 overflow-x-auto">
-        <h1 class="text-2xl font-bold text-center mb-6 text-gray-700">Lista de Trabajadores</h1>
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-gray-700">Lista de Trabajadores</h1>
+          <div class="flex items-center space-x-4">
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              Total: {{ trabajadores.length }}
+            </span>
+            <button 
+              @click="cargarTrabajadores"
+              :disabled="loading"
+              class="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded transition-colors"
+            >
+              {{ loading ? '🔄 Cargando...' : '🔄 Recargar' }}
+            </button>
+          </div>
+        </div>
         
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
-              <tr>
-                <th class="px-2 py-3 text-center">ID</th>
-                <th class="px-2 py-3 text-left">Nombres</th>
-                <th class="px-2 py-3 text-left">Apellido Paterno</th>
-                <th class="px-2 py-3 text-left">Apellido Materno</th>
-                <th class="px-2 py-3 text-center">DNI</th>
-                <th class="px-2 py-3 text-center">Género</th>
-                <th class="px-2 py-3 text-center">Teléfono</th>
-                <th class="px-2 py-3 text-left">Dirección</th>
-                <th class="px-2 py-3 text-left">Email</th>
-                <th class="px-2 py-3 text-left">Cargo</th>
-                <th class="px-2 py-3 text-center">Foto</th>
+        <!-- Loading -->
+        <div v-if="loading && trabajadores.length === 0" class="text-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p class="mt-4 text-gray-600">Cargando trabajadores...</p>
+        </div>
+
+        <!-- Tabla -->
+        <div v-else class="overflow-x-auto">
+          <table class="w-full table-auto border-collapse border border-gray-300">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border border-gray-300">ID</th>
+                <th class="border border-gray-300">Nombre Completo</th>
+                <th class="border border-gray-300">DNI</th>
+                <th class="border border-gray-300">SEXO</th>
+                <th class="border border-gray-300">Email</th>
+                <th class="border border-gray-300">Teléfono</th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-100">
-              <tr class="hover:bg-gray-50">
-                <td class="px-2 py-2 text-center">1</td>
-                <td class="px-2 py-2 font-medium text-gray-800">Juan Carlos</td>
-                <td class="px-2 py-2">Pinto</td>
-                <td class="px-2 py-2">Cruz</td>
-                <td class="px-2 py-2 text-center">12345678</td>
-                <td class="px-2 py-2 text-center">M</td>
-                <td class="px-2 py-2 text-center">987654321</td>
-                <td class="px-2 py-2 text-gray-600">Av. Lima 123, Lima</td>
-                <td class="px-2 py-2 text-blue-600">juan.pinto@empresa.com</td>
-                <td class="px-2 py-2">
-                  <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    Desarrollador Senior
-                  </span>
+            <tbody>
+              <tr v-for="t in trabajadores" :key="t.N_ID_TRABAJADOR" class="hover:bg-gray-50">
+                <td class="border border-gray-300 px-4 py-2 font-mono text-sm">
+                  {{ t.N_ID_TRABAJADOR }}
+                </td>               
+                <td class="border border-gray-300 px-4 py-2">
+                  <div class="font-medium">{{ t.NOMBRES }} {{ t.APELLIDO_PATERNO }}</div>
+                  <div class="text-sm text-gray-500">{{ t.APELLIDO_MATERNO }}</div>
                 </td>
-                <td class="px-2 py-2 text-center">
-                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face" 
-                       alt="Juan Carlos" 
-                       class="w-10 h-10 rounded-full object-cover mx-auto">
+                <td class="border border-gray-300 px-4 py-2 font-mono">
+                  {{ t.DNI }}
                 </td>
-              </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="px-2 py-2 text-center">2</td>
-                <td class="px-2 py-2 font-medium text-gray-800">María Elena</td>
-                <td class="px-2 py-2">González</td>
-                <td class="px-2 py-2">Pérez</td>
-                <td class="px-2 py-2 text-center">23456789</td>
-                <td class="px-2 py-2 text-center">F</td>
-                <td class="px-2 py-2 text-center">987654322</td>
-                <td class="px-2 py-2 text-gray-600">Jr. Cusco 456, Lima</td>
-                <td class="px-2 py-2 text-blue-600">maria.gonzalez@empresa.com</td>
-                <td class="px-2 py-2">
-                  <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    Desarrolladora Junior
-                  </span>
+                <td class="border border-gray-300 px-4 py-2 font-mono">
+                  {{ obtenerSexo(t.N_ID_SEXO) }}
                 </td>
-                <td class="px-2 py-2 text-center">
-                  <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&h=60&fit=crop&crop=face" 
-                      alt="María Elena" 
-                      class="w-10 h-10 rounded-full object-cover mx-auto">
+                <td class="border border-gray-300 px-4 py-2 text-sm">
+                  {{ t.EMAIL_CORPORATIVO }}
                 </td>
-              </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="px-2 py-2 text-center">3</td>
-                <td class="px-2 py-2 font-medium text-gray-800">Carlos Alberto</td>
-                <td class="px-2 py-2">Rodríguez</td>
-                <td class="px-2 py-2">Vargas</td>
-                <td class="px-2 py-2 text-center">34567890</td>
-                <td class="px-2 py-2 text-center">M</td>
-                <td class="px-2 py-2 text-center">987654323</td>
-                <td class="px-2 py-2 text-gray-600">Av. Arequipa 789, Lima</td>
-                <td class="px-2 py-2 text-blue-600">carlos.rodriguez@empresa.com</td>
-                <td class="px-2 py-2">
-                  <span class="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    Analista RRHH
-                  </span>
-                </td>
-                <td class="px-2 py-2 text-center">
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face" 
-                       alt="Carlos Alberto" 
-                       class="w-10 h-10 rounded-full object-cover mx-auto">
-                </td>
-              </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="px-2 py-2 text-center">4</td>
-                <td class="px-2 py-2 font-medium text-gray-800">Ana Lucía</td>
-                <td class="px-2 py-2">López</td>
-                <td class="px-2 py-2">Torres</td>
-                <td class="px-2 py-2 text-center">45678901</td>
-                <td class="px-2 py-2 text-center">F</td>
-                <td class="px-2 py-2 text-center">987654324</td>
-                <td class="px-2 py-2 text-gray-600">Calle Las Flores 321, Lima</td>
-                <td class="px-2 py-2 text-blue-600">ana.lopez@empresa.com</td>
-                <td class="px-2 py-2">
-                  <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    Gerente Marketing
-                  </span>
-                </td>
-                <td class="px-2 py-2 text-center">
-                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face" 
-                       alt="Ana Lucía" 
-                       class="w-10 h-10 rounded-full object-cover mx-auto">
+                <td class="border border-gray-300 px-4 py-2">
+                  {{ t.TELEFONO }}
                 </td>
               </tr>
             </tbody>
           </table>
+
+          <!-- Si no hay datos -->
+          <div v-if="trabajadores.length === 0 && !loading" class="text-center py-8">
+            <p class="text-gray-500">No hay trabajadores para mostrar</p>
+            <button 
+              @click="cargarTrabajadores"
+              class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Cargar Trabajadores
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
   </AppLayout>
 </template>
