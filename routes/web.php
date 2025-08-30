@@ -59,3 +59,20 @@ Route::middleware([
     });
 
 });
+
+
+
+// Rutas para la redireccion de las paginas 
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+    Route::get('asistencia', function () {
+        return Inertia::render('Admin/Asistencia'); 
+    })->name('asistencia');
+
+    Route::get('areas', function () {
+        return Inertia::render('Admin/Areas'); 
+    })->name('areas');
+    Route::get('trabajadores', function () {
+        return Inertia::render('Admin/Trabajadores'); 
+    })->name('trabajadores');
+});
